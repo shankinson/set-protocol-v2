@@ -18,6 +18,7 @@ coverage.json
 coverage/
 .env
 .releaserc.json
+verify/
 
 /.coverage_cache
 /.coverage_contracts

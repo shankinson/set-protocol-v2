@@ -7,11 +7,12 @@ import { privateKeys } from "./utils/wallets";
 
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "@nomiclabs/hardhat-etherscan";
 import "solidity-coverage";
 import "./tasks";
 
 const forkingConfig = {
-  url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_TOKEN}`,
+  url: `https://api.archivenode.io/${process.env.ARCHIVENODE_KEY}`,//`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_TOKEN}`,
   blockNumber: 14792479,
 };
 
@@ -48,6 +49,11 @@ const config: HardhatUserConfig = {
       accounts: getHardhatPrivateKeys(),
       gas: 12000000,
       blockGasLimit: 12000000
+    },
+    polygon: {
+      url: "https://polygon-mainnet.infura.io/v3/" + process.env.INFURA_TOKEN,
+      // @ts-ignore
+      accounts: [`0x${process.env.STAGING_MAINNET_DEPLOY_PRIVATE_KEY}`],
     },
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -95,6 +101,9 @@ const config: HardhatUserConfig = {
   externalGasMods: [
     "external/abi/perp",
   ],
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY
+  }
 };
 
 function getHardhatPrivateKeys() {
