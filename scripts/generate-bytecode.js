@@ -7,7 +7,7 @@ const usdcAddr = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
 const wethAddr = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
 const setTokenAddr = "0xB686bf528C77124cbfB65FB4CFC1EED9794F2D74";
 const ledgerAddr = "0xaFFB88d48B0Be5cd938015ba104d43E0a9DF86b2";
-const newKellyManagerAddr = "0x003A08764BAC0a857C4388636B48332BA7C9eaee";
+const newKellyManagerAddr = "0x1D8B42704e8357e2C29B15D41127fb516DF6494c";
 
 async function main() {
   

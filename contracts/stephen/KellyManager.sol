@@ -4,6 +4,7 @@ pragma solidity ^0.6.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/cryptography/ECDSA.sol";
 import { ISetToken } from "../interfaces/ISetToken.sol";
 
 interface IAToken {
@@ -40,6 +41,9 @@ contract KellyManager is Ownable, AccessControl {
     uint256 public lastExecuted;
     IAaveLeverageModule internal aaveLeverageModule;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+
+    // bytes4(keccak256("isValidSignature(bytes32,bytes)")
+    bytes4 constant internal MAGICVALUE = 0x1626ba7e;
 
     modifier onlyOperator {
         require(hasRole(OPERATOR_ROLE, msg.sender), "Caller is not an operator");
@@ -134,4 +138,32 @@ contract KellyManager is Ownable, AccessControl {
         // solhint-disable-next-line not-rely-on-time
         lastExecuted = block.timestamp;
     }
+
+    /**
+    * @notice Verifies that the signer is the owner of the signing contract.
+    */
+    function isValidSignature(
+        bytes32 _hash,
+        bytes memory _signature
+    ) external view returns (bytes4) {
+
+        require(_signature.length == 65, "invalid signature");
+
+        // Handle libraries that generates signatures with 0/1 for v instead of 27/28, add 27 to v to accept
+        // these malleable signatures.
+        if( _signature[64] == 0x00 ) {
+            _signature[64] = 0x1B;
+        }
+        else if( _signature[64] == 0x01 ) {
+            _signature[64] = 0x1C;
+        }
+
+        // Validate signatures
+        if (ECDSA.recover(_hash, _signature) == owner()) {
+            return MAGICVALUE;
+        } else {
+            return 0xffffffff;
+        }
+    }
+
 }

@@ -29,6 +29,8 @@ const uniswapV3FactoryABI = [{"inputs":[{"internalType":"address","name":"","typ
 const uniswapV3PoolABI = [{"inputs":[],"name":"slot0","outputs":[{"internalType":"uint160","name":"sqrtPriceX96","type":"uint160"},{"internalType":"int24","name":"tick","type":"int24"},{"internalType":"uint16","name":"observationIndex","type":"uint16"},{"internalType":"uint16","name":"observationCardinality","type":"uint16"},{"internalType":"uint16","name":"observationCardinalityNext","type":"uint16"},{"internalType":"uint8","name":"feeProtocol","type":"uint8"},{"internalType":"bool","name":"unlocked","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
 const quoterABI = [{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint24","name":"fee","type":"uint24"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint160","name":"sqrtPriceLimitX96","type":"uint160"}],"name":"quoteExactInputSingle","outputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}];
 
+const MAGICVALUE = 0x1626ba7e;
+
 function babylonianSqrt(x) {
 
   let guess = x;
@@ -42,6 +44,13 @@ function babylonianSqrt(x) {
       }
   }    
 
+}
+
+function sign(address, data) {
+  return hre.network.provider.send(
+    "eth_sign",
+    [address, data]
+  )
 }
 
 async function main() {
@@ -78,6 +87,14 @@ async function main() {
   );
   await kellyManager.deployed();
   console.log("KellyManager deployed to:", kellyManager.address);
+
+  const b = "Version 1";
+  const hash = hre.ethers.utils.hashMessage(b);
+  let signature = await sign(signer.address, hre.ethers.utils.hexlify(hre.ethers.utils.toUtf8Bytes(b)));
+  let isSigValid = await kellyManager.isValidSignature(hash, signature);
+  if( isSigValid != MAGICVALUE) {
+    throw "invalid signature";
+  }
 
   const operatorRole = await kellyManager.OPERATOR_ROLE();
   await kellyManager.grantRole(operatorRole, operator.address);
@@ -119,6 +136,12 @@ async function main() {
   );
   await kellyManager2.deployed();
   console.log("KellyManager 2 deployed to:", kellyManager.address);
+
+  signature = await sign(signer.address, hre.ethers.utils.hexlify(hre.ethers.utils.toUtf8Bytes(b)));
+  isSigValid = await kellyManager2.isValidSignature(hash, signature);
+  if( isSigValid != MAGICVALUE) {
+    throw "invalid signature";
+  }
 
   let bytecode = setToken.interface.encodeFunctionData("setManager", [kellyManager2.address]);
   receipt = await kellyManager.invoke(setToken.address, 0, bytecode);
@@ -360,7 +383,7 @@ async function main() {
   console.log(`Contract Set Token Balance: ${hre.ethers.utils.formatEther(await setToken.balanceOf(leveredSetTokenHelper.address))}`);
   console.log(`Contract amWeth Balance: ${hre.ethers.utils.formatEther(await amWeth.balanceOf(leveredSetTokenHelper.address))}`);
   console.log(`Contract weth Balance: ${hre.ethers.utils.formatEther(await weth.balanceOf(leveredSetTokenHelper.address))}`);
-  console.log(`Contract usdc Balance: ${hre.ethers.utils.formatEther(await usdc.balanceOf(leveredSetTokenHelper.address))}`);  
+  console.log(`Contract usdc Balance: ${hre.ethers.utils.formatEther(await usdc.balanceOf(leveredSetTokenHelper.address))}`);
 
 }
 
