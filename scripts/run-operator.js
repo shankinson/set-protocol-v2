@@ -9,7 +9,7 @@ const hre = require("hardhat");
 
 const provider = new hre.ethers.providers.JsonRpcProvider("https://polygon-mainnet.infura.io/v3/" + process.env.INFURA_TOKEN);
  
-const kellyManagerAddr = "0x1c147184C707a3011761B387898e847d3f3c38A6";
+const kellyManagerAddr = "0x1D8B42704e8357e2C29B15D41127fb516DF6494c";
 const setTokenAddr = "0xB686bf528C77124cbfB65FB4CFC1EED9794F2D74";
 
 async function main() {

@@ -53,7 +53,8 @@ contract KellyResolver {
             // Get the current position data
             ISetToken setToken = ISetToken(_setToken);
             address[] memory components = setToken.getComponents();
-            int256 collateral = setToken.getTotalComponentRealUnits(components[0]);
+            int256 collateral = setToken.getTotalComponentRealUnits(components[0]) +
+                setToken.getTotalComponentRealUnits(components[2]);
             int256 debt = -setToken.getTotalComponentRealUnits(components[1]);
             require(collateral > 0 && debt > 0, "invalid debt or collateral");
 
