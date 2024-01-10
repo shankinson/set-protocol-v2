@@ -1,10 +1,15 @@
 const hre = require("hardhat");
-const uniQuoter = require('../external/abi/uniswap/v3/Quoter.json');
-const uniSwapRouter = require('../external/abi/uniswap/v3/SwapRouter.json');
+const axios = require('axios');
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const zeroExApiKey = process.env.ZEROEX_KEY
 
 const poolAddressesProviderAddr = "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb";
 const aPolWETHAddr = "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8";
-const usdcAddr = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+const usdcAddr = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359";
 const wethAddr = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
 const wmaticAddr = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
 const wmaticABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"},{"name":"wad","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"src","type":"address"},{"name":"dst","type":"address"},{"name":"wad","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"dst","type":"address"},{"name":"wad","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"deposit","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"src","type":"address"},{"indexed":true,"name":"guy","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"src","type":"address"},{"indexed":true,"name":"dst","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"dst","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"src","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"name":"Withdrawal","type":"event"}];
@@ -17,16 +22,7 @@ const aavePoolABI = [{"inputs":[{"internalType":"contract IPoolAddressesProvider
 
 const erc20ABI = [{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"},{"name":"wad","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
 
-const uniswapV3FactoryABI = [{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint24","name":"","type":"uint24"}],"name":"getPool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
-const uniswapV3PoolABI = [{"inputs":[],"name":"slot0","outputs":[{"internalType":"uint160","name":"sqrtPriceX96","type":"uint160"},{"internalType":"int24","name":"tick","type":"int24"},{"internalType":"uint16","name":"observationIndex","type":"uint16"},{"internalType":"uint16","name":"observationCardinality","type":"uint16"},{"internalType":"uint16","name":"observationCardinalityNext","type":"uint16"},{"internalType":"uint8","name":"feeProtocol","type":"uint8"},{"internalType":"bool","name":"unlocked","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
-
-const uniRouterAddr = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff";
-const sushiRouterAddr = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506";
-const uniFactoryAddr = "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32";
-const sushiFactoryAddr = "0xc35DADB65012eC5796536bD9864eD8773aBc74C4";
-const uniQuoterAddr = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6";
-const uniSwapRouterAddr = "0xE592427A0AEce92De3Edee1F18E0157C05861564";
-const uniswapV3FactoryAddr = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
+const zeroExchangeAddr = "0xDef1C0ded9bec7F1a1670819833240f027b25EfF";
 
 async function main() {
   
@@ -67,17 +63,6 @@ async function main() {
 
   console.log("DebtIssuanceModuleV2 added to controller");
 
-  const streamingFeeModuleFactory = await hre.ethers.getContractFactory("StreamingFeeModule");
-  const streamingFeeModule = await streamingFeeModuleFactory.deploy(controller.address);
-
-  await streamingFeeModule.deployed();
-
-  console.log("StreamingFeeModule deployed to:", streamingFeeModule.address);
-
-  await controller.addModule(streamingFeeModule.address);
-
-  console.log("StreamingFeeModule added to controller");
-
   const aaveV3Factory = await hre.ethers.getContractFactory("AaveV3");
   const aaveV3 = await aaveV3Factory.deploy();
   await aaveV3.deployed();
@@ -104,18 +89,13 @@ async function main() {
   await integrationRegistry.addIntegration(aaveV3LeverageModule.address, "DefaultIssuanceModule", debtIssuanceModuleV2.address);
   console.log(`DefaultIssuanceModule set`);
 
-  const ammSplitterFactory = await hre.ethers.getContractFactory("AMMSplitter");
-  const ammSplitter = await ammSplitterFactory.deploy(uniRouterAddr, sushiRouterAddr, uniFactoryAddr, sushiFactoryAddr);
-  await ammSplitter.deployed();
-  console.log("AAMSplitter deployed to:", ammSplitter.address);
+  const zeroExchangeAdapterFactory = await hre.ethers.getContractFactory("ZeroExApiAdapter");
+  const zeroExchangeAdapter = await zeroExchangeAdapterFactory.deploy(zeroExchangeAddr, wmaticAddr);
+  await zeroExchangeAdapter.deployed();
+  console.log("ZeroExApiAdapter deployed to:", zeroExchangeAdapter.address);
 
-  const uniswapV2ExchangeAdapterFactory = await hre.ethers.getContractFactory("UniswapV2ExchangeAdapter");
-  const uniswapV2ExchangeAdapter = await uniswapV2ExchangeAdapterFactory.deploy(ammSplitter.address);
-  await uniswapV2ExchangeAdapter.deployed();
-  console.log("UniswapV2ExchangeAdapter deployed to:", uniswapV2ExchangeAdapter.address);
-
-  await integrationRegistry.addIntegration(aaveV3LeverageModule.address, "AMMSplitterExchangeAdapter", uniswapV2ExchangeAdapter.address);
-  console.log("UniswapV2ExchangeAdapter integration added");
+  await integrationRegistry.addIntegration(aaveV3LeverageModule.address, "ZeroExchangeAdapter", zeroExchangeAdapter.address);
+  console.log("ZeroExchangeAdapter integration added");
 
   const setTokenCreatorFactory = await hre.ethers.getContractFactory("SetTokenCreator");
   const setTokenCreator = await setTokenCreatorFactory.deploy(controller.address);
@@ -140,7 +120,7 @@ async function main() {
   let receipt = await setTokenCreator.connect(signer).create(
     [aPolWETHAddr],
     [amount],
-    [aaveV3LeverageModule.address, debtIssuanceModuleV2.address, streamingFeeModule.address],
+    [aaveV3LeverageModule.address, debtIssuanceModuleV2.address],
     signer.address,
     "Kelly ETH",
     "KETH");
@@ -156,21 +136,11 @@ async function main() {
   const symbol = await setToken.symbol();
   console.log(`${symbol}: ${name} @ ${setToken.address}`);
 
-  receipt = await streamingFeeModule.connect(signer).initialize(setTokenAddr, {
-    feeRecipient: signer.address,
-    maxStreamingFeePercentage: hre.ethers.utils.parseEther("0.4"),
-    streamingFeePercentage: hre.ethers.utils.parseEther("0.0195"),
-    lastStreamingFeeTimestamp: 0
-  });
-
-  await receipt.wait();
-  console.log("Streaming Fee has been initialized in tx: ", receipt.hash);
-
   receipt = await debtIssuanceModuleV2.connect(signer).initialize(
     setTokenAddr,
-    hre.ethers.utils.parseEther("0.01"),
-    hre.ethers.utils.parseEther("0.001"),
-    hre.ethers.utils.parseEther("0.001"),
+    hre.ethers.utils.parseEther("0.000"),
+    hre.ethers.utils.parseEther("0.000"),
+    hre.ethers.utils.parseEther("0.000"),
     signer.address,
     hre.ethers.constants.AddressZero);
 
@@ -191,7 +161,7 @@ async function main() {
   console.log(`WETH Balance: ${hre.ethers.utils.formatEther(wethBalance)}`);
 
   const wmatic = await hre.ethers.getContractAt(wmaticABI, wmaticAddr);
-  receipt = await wmatic.connect(signer).deposit({value: hre.ethers.utils.parseEther("10000")});
+  receipt = await wmatic.connect(signer).deposit({value: hre.ethers.utils.parseEther("100000")});
 
   await receipt.wait();
   console.log("MATIC wrapped in tx: ", receipt.hash);
@@ -199,39 +169,17 @@ async function main() {
   const wmaticBalance = await wmatic.balanceOf(signer.address);
   console.log(`WMATIC Balance: ${hre.ethers.utils.formatEther(wmaticBalance)}`);
 
-  const uniswapV3Factory = await hre.ethers.getContractAt(uniswapV3FactoryABI, uniswapV3FactoryAddr);
-  console.log("UniswapV3Factory deployed to:", uniswapV3Factory.address);
-
-  const wethWmaticV3PoolAddr = await uniswapV3Factory.getPool(wethAddr, wmaticAddr, 500);
-  console.log(`wethWmaticV3PoolAddr address: ${wethWmaticV3PoolAddr}`);
-
-  const wethWmaticV3Pool = await hre.ethers.getContractAt(uniswapV3PoolABI, wethWmaticV3PoolAddr);
-  let [sqrtPriceX96] = await wethWmaticV3Pool.slot0();
-  console.log(`sqrtPriceX96: ${sqrtPriceX96}`);
-
-  const token0 = await wethWmaticV3Pool.token0();
-  const sqrtPriceLimitX96 = token0.toLowerCase() === wmaticAddr ? sqrtPriceX96.mul(99).div(100) : sqrtPriceX96.mul(101).div(100);
-
-  const quoter = await hre.ethers.getContractAt(uniQuoter.abi, uniQuoterAddr);
-  const quote = await quoter.callStatic.quoteExactInputSingle(wmaticAddr, wethAddr, 500, wmaticBalance, sqrtPriceLimitX96);
-
-  receipt = await wmatic.approve(uniSwapRouterAddr, wmaticBalance);
-  await receipt.wait();
-  
-  const params = {
-    tokenIn: wmaticAddr,
-    tokenOut: wethAddr,
-    fee: 500,
-    recipient: signer.address,
-    deadline: Date.now(),
-    amountIn: wmaticBalance,
-    amountOutMinimum: quote,
-    sqrtPriceLimitX96
+  let response = await axios.get(`https://polygon.api.0x.org/swap/v1/quote?buyToken=${wethAddr}&sellToken=${wmaticAddr}&sellAmount=${wmaticBalance}&slippagePercentage=0.01&priceImpactProtectionPercentage=0.01`, {headers: {'0x-api-key': zeroExApiKey}});
+  if(response.status != 200) {
+    throw response.statusText;
   }
-  
-  const swapRouter = await hre.ethers.getContractAt(uniSwapRouter.abi, uniSwapRouterAddr);
-  receipt = await swapRouter.exactInputSingle(params);
+  await delay(1000);
 
+  receipt = await wmatic.approve(response.data.to, response.data.sellAmount);
+  await receipt.wait();
+
+  const tx = {to: response.data.to, data: response.data.data}
+  receipt = await signer.sendTransaction(tx);
   await receipt.wait();
   console.log("Swapped in tx: ", receipt.hash);
 
@@ -257,7 +205,7 @@ async function main() {
   let setTokenBalance = await setToken.balanceOf(signer.address);
   console.log(`Set Token Balance: ${hre.ethers.utils.formatEther(setTokenBalance)}`);
 
-  const setTokenAmount = hre.ethers.utils.parseEther("10");
+  const setTokenAmount = hre.ethers.utils.parseEther("500");
   let [componentAddresses,equityNotional,debtNotional] = await debtIssuanceModuleV2.getRequiredComponentIssuanceUnits(setTokenAddr, setTokenAmount);
   
   receipt = await aPolWETH.approve(debtIssuanceModuleV2.address, equityNotional[0]);
@@ -283,8 +231,22 @@ async function main() {
   let expectedAmount = amount.mul(99).div(200);
   console.log(`Borrow Amount: ${borrowAmount} Expected Amount: ${expectedAmount}`);
 
+  let totalBorrowAmount = borrowAmount.mul(setSupply).div(hre.ethers.constants.WeiPerEther);
+  response = await axios.get(`https://polygon.api.0x.org/swap/v1/quote?buyToken=${wethAddr}&sellToken=${usdcAddr}&sellAmount=${totalBorrowAmount}&slippagePercentage=0.01&priceImpactProtectionPercentage=0.01`, {headers: {'0x-api-key': zeroExApiKey}});
+  if(response.status != 200) {
+    throw response.statusText;
+  }
+  let guaranteedPrice = hre.ethers.utils.parseEther(response.data.guaranteedPrice);
+  let minAmount = totalBorrowAmount.mul(guaranteedPrice).div(hre.ethers.BigNumber.from(10).pow(usdcDecimals));
+  if( minAmount.lt(expectedAmount) ) {
+    throw `minAmount: ${minAmount} less than expectedAmount: ${expectedAmount}`;
+  }
+  let minAmountPerToken = minAmount.mul(hre.ethers.constants.WeiPerEther).div(setSupply);
+  await delay(1000);
+  console.log(`Total Borrow Amount: ${totalBorrowAmount}, minAmount: ${minAmount}`);
+
   receipt = await aaveV3LeverageModule.connect(signer)
-    .lever(setTokenAddr, usdcAddr, wethAddr, borrowAmount, expectedAmount, "AMMSplitterExchangeAdapter", []);
+    .lever(setTokenAddr, usdcAddr, wethAddr, borrowAmount, minAmountPerToken, "ZeroExchangeAdapter", response.data.data);
   await receipt.wait();
 
   [componentAddresses,equityNotional,debtNotional] = await debtIssuanceModuleV2.getRequiredComponentIssuanceUnits(setTokenAddr, hre.ethers.utils.parseEther("1"));
@@ -310,15 +272,43 @@ async function main() {
     expectedAmount = deltaUsdc.mul(99).div(100);
     console.log(`Expected Amount: ${expectedAmount}`);
     weth.approve(aaveV3LeverageModule.address, deltaEth);
+    const totalDeltaEth = deltaEth.mul(setSupply).div(hre.ethers.constants.WeiPerEther);
+    response = await axios.get(`https://polygon.api.0x.org/swap/v1/quote?buyToken=${usdcAddr}&sellToken=${wethAddr}&sellAmount=${totalDeltaEth}&slippagePercentage=0.01&priceImpactProtectionPercentage=0.01`, {headers: {'0x-api-key': zeroExApiKey}});
+    if(response.status != 200) {
+      throw response.statusText;
+    }
+    guaranteedPrice = hre.ethers.utils.parseUnits(response.data.guaranteedPrice, 6);
+    minAmount = totalDeltaEth.mul(guaranteedPrice).div(hre.ethers.BigNumber.from(10).pow(wethDecimals));
+    if( minAmount.lt(expectedAmount) ) {
+      throw `minAmount: ${minAmount} less than expectedAmount: ${expectedAmount}`;
+    }
+    minAmountPerToken = minAmount.mul(hre.ethers.constants.WeiPerEther).div(setSupply);
+    await delay(1000);
+    console.log(`Total Delta Eth: ${totalDeltaEth}, minAmount: ${minAmount}`);
+
     receipt = await aaveV3LeverageModule.connect(signer)
-      .delever(setTokenAddr, wethAddr, usdcAddr, deltaEth, expectedAmount, "AMMSplitterExchangeAdapter", []);
+      .delever(setTokenAddr, wethAddr, usdcAddr, deltaEth, minAmountPerToken, "ZeroExchangeAdapter", response.data.data);
     await receipt.wait();
   }
   else {
     expectedAmount = deltaEth.abs().mul(99).div(100);
     console.log(`Expected Amount: ${expectedAmount}`);
+    const totalDeltaUsdc = deltaUsdc.abs().mul(setSupply).div(hre.ethers.constants.WeiPerEther);
+    response = await axios.get(`https://polygon.api.0x.org/swap/v1/quote?buyToken=${wethAddr}&sellToken=${usdcAddr}&sellAmount=${totalDeltaUsdc}&slippagePercentage=0.01&priceImpactProtectionPercentage=0.01`, {headers: {'0x-api-key': zeroExApiKey}});
+    if(response.status != 200) {
+      throw response.statusText;
+    }
+    guaranteedPrice = hre.ethers.utils.parseEther(response.data.guaranteedPrice);
+    minAmount = totalDeltaUsdc.mul(guaranteedPrice).div(hre.ethers.BigNumber.from(10).pow(usdcDecimals));
+    if( minAmount.lt(expectedAmount) ) {
+      throw `minAmount: ${minAmount} less than expectedAmount: ${expectedAmount}`;
+    }
+    minAmountPerToken = minAmount.mul(hre.ethers.constants.WeiPerEther).div(setSupply);
+    await delay(1000);
+    console.log(`Total Delta USDC: ${totalDeltaUsdc}, minAmount: ${minAmount}`);
+
     receipt = await aaveV3LeverageModule.connect(signer)
-      .lever(setTokenAddr, usdcAddr, wethAddr, deltaUsdc.abs(), expectedAmount, "AMMSplitterExchangeAdapter", []);
+      .lever(setTokenAddr, usdcAddr, wethAddr, deltaUsdc.abs(), minAmountPerToken, "ZeroExchangeAdapter", response.data.data);
     await receipt.wait();
   }
 
