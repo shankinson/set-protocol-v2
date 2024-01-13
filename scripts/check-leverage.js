@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { ethers } = require("ethers");
 
-const setTokenAddr = "0xB686bf528C77124cbfB65FB4CFC1EED9794F2D74";
+const setTokenAddr = "0x3dc831944DFAfF83654dAd0236a8952Bd0BC7f49";
 const setTokenABI = [{"inputs":[],"name":"getPositions","outputs":[{"components":[{"internalType":"address","name":"component","type":"address"},{"internalType":"address","name":"module","type":"address"},{"internalType":"int256","name":"unit","type":"int256"},{"internalType":"uint8","name":"positionState","type":"uint8"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct ISetToken.Position[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}];
 
 const ethUSDAggregatorAddr = "0xF9680D99D6C9589e2a93a78A04A279e509205945";
