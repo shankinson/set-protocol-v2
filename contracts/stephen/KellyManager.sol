@@ -35,25 +35,16 @@ interface IAaveLeverageModule {
 }
 
 contract KellyManager is Ownable, AccessControl {
-    uint256 public leverage;
-    uint256 public slippage;
-    uint256 public gasLimit;
     uint256 public lastExecuted;
     IAaveLeverageModule internal aaveLeverageModule;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-
-    // bytes4(keccak256("isValidSignature(bytes32,bytes)")
-    bytes4 constant internal MAGICVALUE = 0x1626ba7e;
 
     modifier onlyOperator {
         require(hasRole(OPERATOR_ROLE, msg.sender), "Caller is not an operator");
         _;
     }
 
-    constructor(address _aaveLeverageModule, uint256 _leverage, uint256 _slippage, uint256 _gasLimit) public {
-        leverage = _leverage;
-        slippage = _slippage;
-        gasLimit = _gasLimit;
+    constructor(address _aaveLeverageModule) public {
         aaveLeverageModule = IAaveLeverageModule(_aaveLeverageModule);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
@@ -79,24 +70,9 @@ contract KellyManager is Ownable, AccessControl {
         _returnValue = _target.functionCallWithValue(_data, _value);
     }
 
-    // Allows the owner to update the leverage amount (scaled by 10 ^ 18)
-    function setLeverage(uint256 _leverage) external onlyOwner {
-        leverage = _leverage;
-    }
-
-    // Allows the owner to update the slippage amount (scaled by 10 ^ 18)
-    function setSlippage(uint256 _slippage) external onlyOwner {
-        slippage = _slippage;
-    }
-
     // Allows the owner to reset the last execution time
     function resetExecutionTime() external onlyOwner {
         lastExecuted = 0;
-    }
-
-    // Allows the owner to update the gas limit
-    function setGasLimit(uint256 _gasLimit) external onlyOwner {
-        gasLimit = _gasLimit;
     }
 
     /**
@@ -137,33 +113,6 @@ contract KellyManager is Ownable, AccessControl {
                 _borrowOrRedeemQuantityUnits, _minReceiveOrRepayQuantityUnits, _tradeAdapterName, _tradeData);
         // solhint-disable-next-line not-rely-on-time
         lastExecuted = block.timestamp;
-    }
-
-    /**
-    * @notice Verifies that the signer is the owner of the signing contract.
-    */
-    function isValidSignature(
-        bytes32 _hash,
-        bytes memory _signature
-    ) external view returns (bytes4) {
-
-        require(_signature.length == 65, "invalid signature");
-
-        // Handle libraries that generates signatures with 0/1 for v instead of 27/28, add 27 to v to accept
-        // these malleable signatures.
-        if( _signature[64] == 0x00 ) {
-            _signature[64] = 0x1B;
-        }
-        else if( _signature[64] == 0x01 ) {
-            _signature[64] = 0x1C;
-        }
-
-        // Validate signatures
-        if (ECDSA.recover(_hash, _signature) == owner()) {
-            return MAGICVALUE;
-        } else {
-            return 0xffffffff;
-        }
     }
 
 }

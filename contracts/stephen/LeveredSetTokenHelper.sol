@@ -11,8 +11,8 @@ import {
     IERC20,
     SafeERC20
 } from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import { ILendingPool } from "../interfaces/external/aave-v2/ILendingPool.sol";
-import "../protocol/modules/v1/AaveLeverageModule.sol";
+import { IPool } from "../interfaces/external/aave-v3/IPool.sol";
+import "../protocol/modules/v1/AaveV3LeverageModule.sol";
 import "../protocol/modules/v1/DebtIssuanceModuleV2.sol";
 import "../interfaces/ISetToken.sol";
 
@@ -36,10 +36,10 @@ contract LeveredSetTokenHelper is IUniswapV3SwapCallback {
     using SafeERC20 for ISetToken;
 
     ISetToken internal setToken;
-    AaveLeverageModule internal aaveLeverageModule;
+    AaveV3LeverageModule internal aavev3LeverageModule;
     DebtIssuanceModuleV2 internal debtIssuanceModule;
     IUniswapV3Pool internal pool;
-    ILendingPool internal lendingPool;
+    IPool internal lendingPool;
     address internal amWeth;
     address internal weth;
     address internal usdc;
@@ -90,14 +90,14 @@ contract LeveredSetTokenHelper is IUniswapV3SwapCallback {
      * Contract initialization.
      */
     constructor(address _factory, address _debtIssuanceModule, address _setToken, address _lendingPool, 
-        address _aaveLeverageModule, address _amWeth, address _weth, address _usdc, uint24 _fee) public {
+        address _aavev3LeverageModule, address _amWeth, address _weth, address _usdc, uint24 _fee) public {
 
         // Save a pointer to the pool and pool tokens
         setToken = ISetToken(_setToken);
         pool = IUniswapV3Pool(IUniswapV3Factory(_factory).getPool(_weth, _usdc, _fee));
         debtIssuanceModule = DebtIssuanceModuleV2(_debtIssuanceModule);
-        aaveLeverageModule = AaveLeverageModule(_aaveLeverageModule);
-        lendingPool = ILendingPool(_lendingPool);
+        aavev3LeverageModule = AaveV3LeverageModule(_aavev3LeverageModule);
+        lendingPool = IPool(_lendingPool);
         amWeth = _amWeth;
         weth = _weth;
         usdc = _usdc;
@@ -120,7 +120,7 @@ contract LeveredSetTokenHelper is IUniswapV3SwapCallback {
         
         // Deposit this into AAVE
         {
-            ILendingPool _lendingPool = lendingPool;
+            IPool _lendingPool = lendingPool;
             IERC20(_weth).approve(address(_lendingPool), balance);
             _lendingPool.deposit(_weth, balance, address(this), 0);
         }
@@ -173,7 +173,7 @@ contract LeveredSetTokenHelper is IUniswapV3SwapCallback {
 
         // Convert some of the amWeth back to WETH
         {
-            ILendingPool _lendingPool = lendingPool;
+            IPool _lendingPool = lendingPool;
             _lendingPool.withdraw(_weth, owed, address(this));
         }
 
@@ -218,7 +218,7 @@ contract LeveredSetTokenHelper is IUniswapV3SwapCallback {
             ISetToken _setToken = setToken;
 
             // Make sure we are up to date
-            aaveLeverageModule.sync(_setToken);
+            aavev3LeverageModule.sync(_setToken);
 
             // Get the required units per token
             (address[] memory components, uint256[] memory totalEquityUnits, uint256[] memory totalDebtUnits) =
@@ -259,7 +259,7 @@ contract LeveredSetTokenHelper is IUniswapV3SwapCallback {
             ISetToken _setToken = setToken;
 
             // Make sure we are up to date
-            aaveLeverageModule.sync(_setToken);
+            aavev3LeverageModule.sync(_setToken);
 
             // Get the required units per token
             (address[] memory components, uint256[] memory totalEquityUnits, uint256[] memory totalDebtUnits) =
