@@ -5,29 +5,28 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const zeroExApiKey = process.env.ZEROEX_KEY
+const zeroExApiKey = process.env.ZEROEX_KEY;
 
-// const controllerAddr = "0x75FBBDEAfE23a48c0736B2731b956b7a03aDcfB2";
-// const integrationRegistryAddr = "0x4c4C649455c6433dC48ff1571C9e50aC58f0CeFA";
-// const setTokenCreatorAddr = "0x14f0321be5e581abF9d5BC76260bf015Dc04C53d";
-// const debtIssuanceeModuleV2Addr = "0xf2dC2f456b98Af9A6bEEa072AF152a7b0EaA40C9";
-// const aaveLeverageModuleAddr = "0xB7F72e15239197021480EB720E1495861A1ABdce";
-const poolAddressesProviderAddr = "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb";
+const ledgerAddress = "0xaFFB88d48B0Be5cd938015ba104d43E0a9DF86b2";
+
+const controllerAddr = "0x126B4798131f3bE3D18E8f0371fb6824dbAE57b7";
+const integrationRegistryAddr = "0xBBbD7172Ea592578394987478ea73025DF30c0aD";
+const setTokenCreatorAddr = "0x30386B3e04914be256EF33055AE23CcFa62063D0";
+const debtIssuanceeModuleV2Addr = "0xFeCd42400b3B0aECBC13b5B9eb7B7585f0a2201B";
+const aaveV3LeverageModuleAddr = "0x4d8eA935D9A7AcD72502dc5cD00B9B1B751C06DC";
+const kellyManagerAddr = "0xB856041552C8Fe7084759816f1Fb5A51d6f8435F";
 const usdcAddr = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359";
 const wethAddr = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
 const wmaticAddr = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
 const uniswapV3FactoryAddr = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 const quoterAddr = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6";
 const aPolWETHAddr = "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8";
-const zeroExchangeAddr = "0xDef1C0ded9bec7F1a1670819833240f027b25EfF";
 const aavePoolAddr = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
+const setTokenAddr = "0x3dc831944DFAfF83654dAd0236a8952Bd0BC7f49";
 const aavePoolABI = [{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"onBehalfOf","type":"address"},{"internalType":"uint16","name":"referralCode","type":"uint16"}],"name":"supply","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 const ethUSDAggregatorAddr = "0xF9680D99D6C9589e2a93a78A04A279e509205945";
 const ethUSDAggregatorABI = [{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"}];
-
-const aaveLendingPoolAddr = "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf";
-const aaveLendingPoolABI = [{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"onBehalfOf","type":"address"},{"internalType":"uint16","name":"referralCode","type":"uint16"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"address","name":"to","type":"address"}],"name":"withdraw","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}];
 
 const erc20ABI = [{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"guy","type":"address"},{"name":"wad","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
 const wmaticABI = [{"constant":false,"inputs":[{"name":"guy","type":"address"},{"name":"wad","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"deposit","outputs":[],"payable":true,"stateMutability":"payable","type":"function"}];
@@ -35,8 +34,6 @@ const wmaticABI = [{"constant":false,"inputs":[{"name":"guy","type":"address"},{
 const uniswapV3FactoryABI = [{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint24","name":"","type":"uint24"}],"name":"getPool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
 const uniswapV3PoolABI = [{"inputs":[],"name":"slot0","outputs":[{"internalType":"uint160","name":"sqrtPriceX96","type":"uint160"},{"internalType":"int24","name":"tick","type":"int24"},{"internalType":"uint16","name":"observationIndex","type":"uint16"},{"internalType":"uint16","name":"observationCardinality","type":"uint16"},{"internalType":"uint16","name":"observationCardinalityNext","type":"uint16"},{"internalType":"uint8","name":"feeProtocol","type":"uint8"},{"internalType":"bool","name":"unlocked","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
 const quoterABI = [{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint24","name":"fee","type":"uint24"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint160","name":"sqrtPriceLimitX96","type":"uint160"}],"name":"quoteExactInputSingle","outputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}];
-
-const MAGICVALUE = 0x1626ba7e;
 
 function babylonianSqrt(x) {
 
@@ -53,178 +50,59 @@ function babylonianSqrt(x) {
 
 }
 
-function sign(address, data) {
-  return hre.network.provider.send(
-    "eth_sign",
-    [address, data]
-  )
-}
-
 async function main() {
-  
-  const accounts = await hre.ethers.getSigners();
-  const signer = accounts[0];
-  const operator = accounts[1];
 
-  // We get the contract to deploy
-  // const controller = await hre.ethers.getContractAt("Controller", controllerAddr);
-  // console.log("Controller deployed to:", controller.address);
-
-  const controllerFactory = await hre.ethers.getContractFactory("Controller");
-  const controller = await controllerFactory.deploy(signer.address);
-
-  await controller.deployed();
-
-  console.log("Controller deployed to:", controller.address);
-
-  await controller.initialize([], [], [], []);
-  
-  console.log("Controller is initialized");
-
-  // const integrationRegistry = await hre.ethers.getContractAt("IntegrationRegistry", integrationRegistryAddr);
-  // console.log("IntegrationRegistry deployed to:", integrationRegistry.address);
-
-  const integrationRegistryFactory = await hre.ethers.getContractFactory("IntegrationRegistry");
-  const integrationRegistry = await integrationRegistryFactory.deploy(controller.address);
-
-  await integrationRegistry.deployed();
-
-  console.log("IntegrationRegistry deployed to:", integrationRegistry.address);
-
-  const INTEGRATION_REGISTRY_RESOURCE_ID = 0;
-  await controller.addResource(integrationRegistry.address, INTEGRATION_REGISTRY_RESOURCE_ID);
-
-  console.log("IntegrationRegistry added to controller as resource");
-
-  // const debtIssuanceModuleV2 = await hre.ethers.getContractAt("DebtIssuanceModuleV2", debtIssuanceeModuleV2Addr);
-  // console.log("DebtIssuanceModuleV2 deployed to:", debtIssuanceModuleV2.address);
-
-  const debtIssuanceModuleV2Factory = await hre.ethers.getContractFactory("DebtIssuanceModuleV2");
-  const debtIssuanceModuleV2 = await debtIssuanceModuleV2Factory.deploy(controller.address);
-
-  await debtIssuanceModuleV2.deployed();
-
-  console.log("DebtIssuanceModuleV2 deployed to:", debtIssuanceModuleV2.address);
-
-  await controller.addModule(debtIssuanceModuleV2.address);
-
-  console.log("DebtIssuanceModuleV2 added to controller");
-
-  // const aaveLeverageModule = await hre.ethers.getContractAt("AaveLeverageModule", aaveLeverageModuleAddr);
-  // console.log("AaveLeverageModule deployed to:", aaveLeverageModule.address);
-
-  const aaveV3Factory = await hre.ethers.getContractFactory("AaveV3");
-  const aaveV3 = await aaveV3Factory.deploy();
-  await aaveV3.deployed();
-  console.log("AaveV3 deployed to:", aaveV3.address);
-
-  const aaveV3LeverageModuleFactory = await hre.ethers.getContractFactory("AaveV3LeverageModule", {
-    libraries: {
-      AaveV3: aaveV3.address
-    }
+  await hre.network.provider.request({
+    method: "hardhat_impersonateAccount",
+    params: [ledgerAddress]
   });
   
-  const aaveV3LeverageModule = await aaveV3LeverageModuleFactory.deploy(controller.address, poolAddressesProviderAddr);
-  await aaveV3LeverageModule.deployed();
+  const signer = await hre.ethers.getSigner(ledgerAddress);
+  const accounts = await hre.ethers.getSigners();
+  const bank = accounts[0];
+  const operator = accounts[1];
 
-  console.log("AaveV3LeverageModule deployed to:", aaveV3LeverageModule.address);
+  let receipt = await bank.sendTransaction({to: ledgerAddress, value: hre.ethers.utils.parseEther("110000")});
+  await receipt.wait();
 
-  await controller.addModule(aaveV3LeverageModule.address);
+  const controller = await hre.ethers.getContractAt("Controller", controllerAddr, signer);
+  console.log("Controller deployed to:", controller.address);
 
-  console.log("AaveV3LeverageModule added to controller");
+  const integrationRegistry = await hre.ethers.getContractAt("IntegrationRegistry", integrationRegistryAddr, signer);
+  console.log("IntegrationRegistry deployed to:", integrationRegistry.address);
 
-  await aaveV3LeverageModule.updateAnySetAllowed(true);
-  console.log(`AaveV3LeverageModule any set allowed`);
+  const debtIssuanceModuleV2 = await hre.ethers.getContractAt("DebtIssuanceModuleV2", debtIssuanceeModuleV2Addr, signer);
+  console.log("DebtIssuanceModuleV2 deployed to:", debtIssuanceModuleV2.address);
 
-  await integrationRegistry.addIntegration(aaveV3LeverageModule.address, "DefaultIssuanceModule", debtIssuanceModuleV2.address);
-  console.log(`DefaultIssuanceModule set`);
+  const aaveV3LeverageModule = await hre.ethers.getContractAt("AaveLeverageModule", aaveV3LeverageModuleAddr, signer);
+  console.log("AaveLeverageModule deployed to:", aaveV3LeverageModule.address);
 
-  // const setTokenCreator = await hre.ethers.getContractAt("SetTokenCreator", setTokenCreatorAddr);
-  // console.log("SetTokenCreator deployed to:", setTokenCreator.address);
-
-  const zeroExchangeAdapterFactory = await hre.ethers.getContractFactory("ZeroExApiAdapter");
-  const zeroExchangeAdapter = await zeroExchangeAdapterFactory.deploy(zeroExchangeAddr, wmaticAddr);
-  await zeroExchangeAdapter.deployed();
-  console.log("ZeroExApiAdapter deployed to:", zeroExchangeAdapter.address);
-
-  await integrationRegistry.addIntegration(aaveV3LeverageModule.address, "ZeroExchangeAdapter", zeroExchangeAdapter.address);
-  console.log("ZeroExchangeAdapter integration added");
-
-  const setTokenCreatorFactory = await hre.ethers.getContractFactory("SetTokenCreator");
-  const setTokenCreator = await setTokenCreatorFactory.deploy(controller.address);
-
-  await setTokenCreator.deployed();
-
+  const setTokenCreator = await hre.ethers.getContractAt("SetTokenCreator", setTokenCreatorAddr, signer);
   console.log("SetTokenCreator deployed to:", setTokenCreator.address);
 
-  await controller.addFactory(setTokenCreator.address);
-
-  console.log("SetTokenCreator added to controller");
-
-  const kellyManagerFactory = await hre.ethers.getContractFactory("KellyManager");
-  const kellyManager = await kellyManagerFactory.deploy(
-    aaveV3LeverageModule.address,
-    hre.ethers.utils.parseEther("1.5"),
-    hre.ethers.utils.parseEther("0.99"),
-    hre.ethers.utils.parseUnits("250", "gwei")
-  );
-  await kellyManager.deployed();
+  const kellyManager = await hre.ethers.getContractAt("KellyManager", kellyManagerAddr, signer);
   console.log("KellyManager deployed to:", kellyManager.address);
-
-  const b = "Version 1";
-  const hash = hre.ethers.utils.hashMessage(b);
-  let signature = await sign(signer.address, hre.ethers.utils.hexlify(hre.ethers.utils.toUtf8Bytes(b)));
-  let isSigValid = await kellyManager.isValidSignature(hash, signature);
-  if( isSigValid != MAGICVALUE) {
-    throw "invalid signature";
-  }
 
   const operatorRole = await kellyManager.OPERATOR_ROLE();
   await kellyManager.grantRole(operatorRole, operator.address);
   console.log(`Operator role has been granted`);
 
-  const ethUSDAggregator = await hre.ethers.getContractAt(ethUSDAggregatorABI, ethUSDAggregatorAddr);
+  const ethUSDAggregator = await hre.ethers.getContractAt(ethUSDAggregatorABI, ethUSDAggregatorAddr, signer);
   const ethUSDAggregatorDecimals = await ethUSDAggregator.decimals();
   const {answer} = await ethUSDAggregator.latestRoundData();
   console.log(`ETH/USD Aggregator deployed to: ${ethUSDAggregator.address} decimals: ${ethUSDAggregatorDecimals} answer: ${answer}`);
 
-  // Get the pre-scaled amount of ETH
-  const amount = hre.ethers.utils.parseEther("100")
-    .mul(hre.ethers.BigNumber.from(10).pow(ethUSDAggregatorDecimals)).div(answer);
-  console.log(`Set Weth Units: ${hre.ethers.utils.formatEther(amount)}`);
-  let receipt = await setTokenCreator.connect(signer).create(
-    [aPolWETHAddr],
-    [amount],
-    [aaveV3LeverageModule.address, debtIssuanceModuleV2.address],
-    kellyManager.address,
-    "Kelly ETH",
-    "KETH");
+  const setToken = await hre.ethers.getContractAt("SetToken", setTokenAddr, signer);
+  console.log(`SetToken deployed to: ${setToken.address}`);
 
-  const result = await receipt.wait();
-  console.log("SetToken has been created in tx: ", receipt.hash);
-
-  const setTokenAddr = result.events.find(obj => obj.event === "SetTokenCreated").args[0];
-  console.log(`SetToken deployed to: ${setTokenAddr}`);
-
-  const setToken = await hre.ethers.getContractAt("SetToken", setTokenAddr);
   const name = await setToken.name();
   const symbol = await setToken.symbol();
   console.log(`${symbol}: ${name} @ ${setToken.address}`);
 
-  const kellyManager2 = await kellyManagerFactory.deploy(
-    aaveV3LeverageModule.address,
-    hre.ethers.utils.parseEther("1.5"),
-    hre.ethers.utils.parseEther("0.99"),
-    hre.ethers.utils.parseUnits("250", "gwei")
-  );
+  const kellyManagerFactory = await hre.ethers.getContractFactory("KellyManager");
+  const kellyManager2 = await kellyManagerFactory.deploy(aaveV3LeverageModule.address);
   await kellyManager2.deployed();
   console.log("KellyManager 2 deployed to:", kellyManager2.address);
-
-  signature = await sign(signer.address, hre.ethers.utils.hexlify(hre.ethers.utils.toUtf8Bytes(b)));
-  isSigValid = await kellyManager2.isValidSignature(hash, signature);
-  if( isSigValid != MAGICVALUE) {
-    throw "invalid signature";
-  }
 
   let bytecode = setToken.interface.encodeFunctionData("setManager", [kellyManager2.address]);
   receipt = await kellyManager.invoke(setToken.address, 0, bytecode);
@@ -233,37 +111,14 @@ async function main() {
   console.log("SetToken manager has been changed in tx: ", receipt.hash);
 
   await kellyManager2.grantRole(operatorRole, operator.address);
-  console.log(`Operator role has been granted`);  
+  console.log(`Operator role has been granted`);
 
-  bytecode = debtIssuanceModuleV2.interface.encodeFunctionData("initialize", [
-    setTokenAddr,
-    hre.ethers.utils.parseEther("0.000"),
-    hre.ethers.utils.parseEther("0.000"),
-    hre.ethers.utils.parseEther("0.000"),
-    signer.address,
-    hre.ethers.constants.AddressZero
-  ]);
-  receipt = await kellyManager2.invoke(debtIssuanceModuleV2.address, 0, bytecode);
-
-  await receipt.wait();
-  console.log("Debt Issuance Module has been initialized in tx: ", receipt.hash);
-
-  bytecode = aaveV3LeverageModule.interface.encodeFunctionData("initialize", [
-    setTokenAddr,
-    [wethAddr],
-    [usdcAddr]
-  ]);
-  receipt = await kellyManager2.invoke(aaveV3LeverageModule.address, 0, bytecode);
-
-  await receipt.wait();
-  console.log("Aave Leverage Module has been initialized in tx: ", receipt.hash);
-
-  const weth = await hre.ethers.getContractAt(erc20ABI, wethAddr);
+  const weth = await hre.ethers.getContractAt(erc20ABI, wethAddr, signer);
   const wethDecimals = await weth.decimals();
   let wethBalance = await weth.balanceOf(signer.address);
   console.log(`WETH Balance: ${hre.ethers.utils.formatEther(wethBalance)}`);
 
-  const wmatic = await hre.ethers.getContractAt(wmaticABI, wmaticAddr);
+  const wmatic = await hre.ethers.getContractAt(wmaticABI, wmaticAddr, signer);
   receipt = await wmatic.connect(signer).deposit({value: hre.ethers.utils.parseEther("100000")});
 
   await receipt.wait();
@@ -288,7 +143,7 @@ async function main() {
   wethBalance = await weth.balanceOf(signer.address);
   console.log(`WETH Balance: ${hre.ethers.utils.formatEther(wethBalance)}`);
 
-  const aavePool = await hre.ethers.getContractAt(aavePoolABI, aavePoolAddr);
+  const aavePool = await hre.ethers.getContractAt(aavePoolABI, aavePoolAddr, signer);
   console.log(`aavePool address: ${aavePool.address}`);
 
   receipt = await weth.approve(aavePool.address, wethBalance);
@@ -300,7 +155,7 @@ async function main() {
   wethBalance = await weth.balanceOf(signer.address);
   console.log(`WETH Balance: ${hre.ethers.utils.formatEther(wethBalance)}`);
 
-  const aPolWETH = await hre.ethers.getContractAt(erc20ABI, aPolWETHAddr);
+  const aPolWETH = await hre.ethers.getContractAt(erc20ABI, aPolWETHAddr, signer);
   let aPolWETHBalance = await aPolWETH.balanceOf(signer.address);
   console.log(`aPolWETH Balance: ${hre.ethers.utils.formatEther(aPolWETHBalance)}`);
 
@@ -322,10 +177,11 @@ async function main() {
   const setSupply = await setToken.totalSupply();
   console.log(`Set Token Supply: ${hre.ethers.utils.formatEther(setSupply)}`);
 
-  const usdc = await hre.ethers.getContractAt(erc20ABI, usdcAddr);
+  const usdc = await hre.ethers.getContractAt(erc20ABI, usdcAddr, signer);
   const usdcDecimals = await usdc.decimals();
   const decimalDelta = wethDecimals - usdcDecimals;
 
+  const amount = hre.ethers.BigNumber.from("38363648244787077");
   const borrowAmount = hre.ethers.utils.parseUnits("100", usdcDecimals).div(2);
   let expectedAmount = amount.mul(99).div(200);
   console.log(`Borrow Amount: ${borrowAmount} Expected Amount: ${expectedAmount}`);
@@ -412,7 +268,7 @@ async function main() {
     bytecode = kellyManager2.interface.encodeFunctionData("operatorExecute", [
       setTokenAddr, usdcAddr, wethAddr, deltaUsdc.abs(), minAmountPerToken, "ZeroExchangeAdapter", response.data.data
     ]);
-    receipt = await operator.sendTransaction({to: kellyManager2.address, data: execPayload});
+    receipt = await operator.sendTransaction({to: kellyManager2.address, data: bytecode});
     await receipt.wait();
   }
 
@@ -428,13 +284,13 @@ async function main() {
   aPolWETHBalance = await aPolWETH.balanceOf(signer.address);
   console.log(`aPolWETH Balance: ${hre.ethers.utils.formatEther(aPolWETHBalance)}`);
 
-  const uniswapV3Factory = await hre.ethers.getContractAt(uniswapV3FactoryABI, uniswapV3FactoryAddr);
+  const uniswapV3Factory = await hre.ethers.getContractAt(uniswapV3FactoryABI, uniswapV3FactoryAddr, signer);
   console.log("UniswapV3Factory deployed to:", uniswapV3Factory.address);
 
   const uniswapV3PoolAddr = await uniswapV3Factory.getPool(wethAddr, usdcAddr, 500);
   console.log(`UniswapV3Pool address: ${uniswapV3PoolAddr}`);
 
-  const uniswapV3Pool = await hre.ethers.getContractAt(uniswapV3PoolABI, uniswapV3PoolAddr);
+  const uniswapV3Pool = await hre.ethers.getContractAt(uniswapV3PoolABI, uniswapV3PoolAddr, signer);
   let [sqrtPriceX96] = await uniswapV3Pool.slot0();
   console.log(`sqrtPriceX96: ${sqrtPriceX96}`);
 
@@ -451,7 +307,7 @@ async function main() {
   const loan = hre.ethers.utils.parseEther("5").mul(debtNotional[1]).div(unitPrice);
   console.log(`loan: ${loan}`);
 
-  const quoter = await hre.ethers.getContractAt(quoterABI, quoterAddr);
+  const quoter = await hre.ethers.getContractAt(quoterABI, quoterAddr, signer);
   const quote = await quoter.callStatic.quoteExactInputSingle(usdcAddr, wethAddr, 500, loan,
       (await uniswapV3Pool.token0()) == usdcAddr ? sqrtPriceX96.mul(99).div(100) : sqrtPriceX96.mul(101).div(100));
   console.log(`quote: ${quote}`);
@@ -466,7 +322,7 @@ async function main() {
 
   const tokensToMint = hre.ethers.utils.parseEther("60");
   await aPolWETH.approve(leveredSetTokenHelper.address, unitPrice.mul(tokensToMint));
-  await leveredSetTokenHelper.mint(signer.address, tokensToMint, averagePrice);
+  await leveredSetTokenHelper.connect(signer).mint(signer.address, tokensToMint, averagePrice);
 
   setTokenBalance = await setToken.balanceOf(signer.address);
   console.log(`Set Token Balance: ${hre.ethers.utils.formatEther(setTokenBalance)}`);
@@ -476,7 +332,7 @@ async function main() {
 
   [sqrtPriceX96] = await uniswapV3Pool.slot0();
   await setToken.approve(leveredSetTokenHelper.address, setTokenBalance);
-  await leveredSetTokenHelper.redeem(signer.address, setTokenBalance, sqrtPriceX96.mul(101).div(99));
+  await leveredSetTokenHelper.connect(signer).redeem(signer.address, setTokenBalance, sqrtPriceX96.mul(101).div(99));
 
   setTokenBalance = await setToken.balanceOf(signer.address);
   console.log(`Set Token Balance: ${hre.ethers.utils.formatEther(setTokenBalance)}`);
